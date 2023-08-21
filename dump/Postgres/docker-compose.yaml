@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_2
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+      POSTGRES_DB: file_processing
+    ports:
+      - 15432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+  restore_db:
+    image: postgres:latest
+    container_name: restore_db
+    depends_on:
+      - postgres
+    volumes:
+      - ./respaldo.sql:/respaldo.sql
+    command: ["bash", "-c", "sleep 10 && PGPASSWORD=mysecretpassword psql -h postgres -U postgres -d file_processing -f /respaldo.sql"]
+
+    networks:
+      - postgres_network
+
+networks:
+  postgres_network:
+    name: postgres_net
+    driver: bridge
+
+volumes:
+  pgdata: {}
