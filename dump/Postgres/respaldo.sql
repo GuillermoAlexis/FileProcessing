@@ -26,7 +26,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.app_user (
     id integer NOT NULL,
-    username character varying(50) NOT NULL,
+    user_name character varying(50) NOT NULL,
     email character varying(100) NOT NULL,
     password character varying(100) NOT NULL,
     role_id integer
@@ -97,7 +97,7 @@ ALTER SEQUENCE public.feature_id_seq OWNED BY public.feature.id;
 
 CREATE TABLE public.file (
     id integer NOT NULL,
-    filename character varying(255) NOT NULL,
+    file_name character varying(255) NOT NULL,
     status character varying(50) NOT NULL,
     processed_at timestamp without time zone,
     user_id integer
@@ -281,7 +281,7 @@ ALTER TABLE ONLY public.validation_detail ALTER COLUMN id SET DEFAULT nextval('p
 -- Data for Name: app_user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.app_user (id, username, email, password, role_id) FROM stdin;
+COPY public.app_user (id, user_name, email, password, role_id) FROM stdin;
 1	admin	admin@example.com	adminpassword	1
 2	user1	user1@example.com	userpassword	2
 3	user2	user2@example.com	userpassword	2
@@ -303,7 +303,7 @@ COPY public.feature (id, name) FROM stdin;
 -- Data for Name: file; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.file (id, filename, status, processed_at, user_id) FROM stdin;
+COPY public.file (id, file_name, status, processed_at, user_id) FROM stdin;
 1	20230820_File1.DAT	Procesado	\N	1
 2	20230820_File2.DAT	En Proceso	\N	2
 \.
