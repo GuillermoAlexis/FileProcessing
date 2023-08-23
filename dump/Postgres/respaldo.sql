@@ -28,8 +28,7 @@ CREATE TABLE public.app_user (
     id integer NOT NULL,
     user_name character varying(50) NOT NULL,
     email character varying(100) NOT NULL,
-    password character varying(100) NOT NULL,
-    role_id integer
+    password character varying(100) NOT NULL
 );
 
 
@@ -55,6 +54,41 @@ ALTER TABLE public.app_user_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.app_user_id_seq OWNED BY public.app_user.id;
+
+
+--
+-- Name: app_user_role; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.app_user_role (
+    id integer NOT NULL,
+    app_user_id integer NOT NULL,
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.app_user_role OWNER TO postgres;
+
+--
+-- Name: app_user_role_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.app_user_role_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.app_user_role_id_seq OWNER TO postgres;
+
+--
+-- Name: app_user_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.app_user_role_id_seq OWNED BY public.app_user_role.id;
 
 
 --
@@ -243,6 +277,13 @@ ALTER TABLE ONLY public.app_user ALTER COLUMN id SET DEFAULT nextval('public.app
 
 
 --
+-- Name: app_user_role id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.app_user_role ALTER COLUMN id SET DEFAULT nextval('public.app_user_role_id_seq'::regclass);
+
+
+--
 -- Name: feature id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -281,10 +322,21 @@ ALTER TABLE ONLY public.validation_detail ALTER COLUMN id SET DEFAULT nextval('p
 -- Data for Name: app_user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.app_user (id, user_name, email, password, role_id) FROM stdin;
-1	admin	admin@example.com	adminpassword	1
-2	user1	user1@example.com	userpassword	2
-3	user2	user2@example.com	userpassword	2
+COPY public.app_user (id, user_name, email, password) FROM stdin;
+1	admin	admin@example.com	adminpassword
+2	user1	user1@example.com	userpassword
+3	user2	user2@example.com	userpassword
+\.
+
+
+--
+-- Data for Name: app_user_role; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.app_user_role (id, app_user_id, role_id) FROM stdin;
+1	1	1
+2	2	2
+3	3	2
 \.
 
 
@@ -351,6 +403,13 @@ SELECT pg_catalog.setval('public.app_user_id_seq', 3, true);
 
 
 --
+-- Name: app_user_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.app_user_role_id_seq', 1, false);
+
+
+--
 -- Name: feature_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -394,6 +453,14 @@ ALTER TABLE ONLY public.app_user
 
 
 --
+-- Name: app_user_role app_user_role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.app_user_role
+    ADD CONSTRAINT app_user_role_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: feature feature_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -434,11 +501,19 @@ ALTER TABLE ONLY public.validation_detail
 
 
 --
--- Name: app_user app_user_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: app_user_role app_user_role_app_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.app_user
-    ADD CONSTRAINT app_user_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.role(id);
+ALTER TABLE ONLY public.app_user_role
+    ADD CONSTRAINT app_user_role_app_user_id_fkey FOREIGN KEY (app_user_id) REFERENCES public.app_user(id);
+
+
+--
+-- Name: app_user_role app_user_role_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.app_user_role
+    ADD CONSTRAINT app_user_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.role(id);
 
 
 --
