@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeatureDTO {
-	private Long id;
-	private String name;
+    private Long id;
+    private String name;
 }

@@ -1,16 +1,16 @@
 package com.app.FileProcessing.dto;
 
-import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleDTO {
-	private Long id;
-	private String name;
-	private Set<FeatureDTO> features;
+    private Long id;
+    private String name;
+    private List<FeatureDTO> features;
 }
