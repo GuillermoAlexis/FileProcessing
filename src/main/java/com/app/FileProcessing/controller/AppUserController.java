@@ -51,9 +51,9 @@ public class AppUserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+	public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {//PASO 3 DEL LOGIN
 	    try {
-	        AppUserDTO authenticatedUser = appUserService.login(email, password);
+	        AppUserDTO authenticatedUser = appUserService.login(email, password); //PASO 4 DEL LOGIN
 	        return ResponseEntity.ok(authenticatedUser);
 	    } catch (AuthenticationException e) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
