@@ -14,6 +14,7 @@ public interface AppUserMapper {
     AppUserMapper INSTANCE = Mappers.getMapper(AppUserMapper.class);
 
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "token", ignore = true)
     AppUserDTO toDTO(AppUser appUser);
 
     AppUser toEntity(AppUserDTO appUserDTO);
