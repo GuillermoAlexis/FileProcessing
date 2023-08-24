@@ -1,6 +1,7 @@
 package com.app.FileProcessing.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,12 +9,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.FileProcessing.dto.AppUserDTO;
+import com.app.FileProcessing.dto.RoleDTO;
 import com.app.FileProcessing.mapper.AppUserMapper;
 import com.app.FileProcessing.model.AppUser;
+import com.app.FileProcessing.model.Role;
 import com.app.FileProcessing.repository.AppUserRepository;
+import com.app.FileProcessing.repository.RoleRepository;
 import com.app.FileProcessing.security.AppUserDetails;
 import com.app.FileProcessing.security.JwtProvider;
 import com.app.FileProcessing.service.AppUserService;
@@ -24,13 +29,33 @@ public class AppUserServiceImpl implements AppUserService {
 	private AppUserRepository appUserRepository;
 
 	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
 	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private JwtProvider jwtProvider;
 
 	public AppUserDTO createAppUser(AppUserDTO appUserDTO) {
+		// Convierte el DTO a una entidad AppUser
 		AppUser appUser = AppUserMapper.INSTANCE.toEntity(appUserDTO);
+
+		// Codifica la contraseña antes de guardarla
+		String encodedPassword = passwordEncoder.encode(appUser.getPassword());
+		appUser.setPassword(encodedPassword);
+
+		// Asigna roles a la entidad del usuario si es necesario
+		// Ejemplo:
+		List<Role> roles = roleRepository
+				.findAllById(appUserDTO.getRoles().stream().map(RoleDTO::getId).collect(Collectors.toList()));
+		appUser.setRoles(roles);
+
+		// Guarda el usuario en la base de datos y convierte la entidad resultante en
+		// DTO
 		return AppUserMapper.INSTANCE.toDTO(appUserRepository.save(appUser));
 	}
 
@@ -65,22 +90,17 @@ public class AppUserServiceImpl implements AppUserService {
 		try {
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
 			// El objeto de autenticación incluye la información del usuario autenticado
 			AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
 			AppUser appUser = userDetails.getAppUser();
-
 			String jwtToken = jwtProvider.generateToken(userDetails);
-
 			AppUserDTO appUserDTO = AppUserMapper.INSTANCE.toDTO(appUser);
 			appUserDTO.setToken(jwtToken);
-
 			return appUserDTO;
 		} catch (AuthenticationException e) {
-			// Manejar el fallo de autenticación
-			throw new RuntimeException("Authentication failed");
+			throw new RuntimeException("Authentication failed: " + e.getMessage());
 		}
 	}
+
 }
