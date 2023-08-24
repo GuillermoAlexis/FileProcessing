@@ -3,6 +3,9 @@ package com.app.FileProcessing.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +51,13 @@ public class AppUserController {
 	}
 
 	@PostMapping("/login")
-	public AppUserDTO login(@RequestParam String email, @RequestParam String password) {
-		return appUserService.login(email, password);
+	public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+	    try {
+	        AppUserDTO authenticatedUser = appUserService.login(email, password);
+	        return ResponseEntity.ok(authenticatedUser);
+	    } catch (AuthenticationException e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
 	}
+
 }
