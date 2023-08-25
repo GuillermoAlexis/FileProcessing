@@ -14,32 +14,38 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+@Component  // Indica que esta clase es un componente de Spring
 public class JwtFilter extends OncePerRequestFilter {
 
-	@Autowired
+	@Autowired  // Inyección de dependencia para el proveedor de JWT
 	private JwtProvider jwtProvider;
 
-	@Autowired
+	@Autowired  // Inyección de dependencia para el servicio de detalles de usuario
 	private UserDetailsService userDetailsService;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)//flujo 1
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) // Flujo 1
 			throws ServletException, java.io.IOException {
-		final String authorizationHeader = request.getHeader("Authorization"); //AQUI EJECUTE DESDE POSTMAN EL LOGIN Y E INGRESO ACA PODRIA DECIR QUE ES EL PASO 1 DEL LOGIN
+		// Obtiene el encabezado de autorización de la solicitud
+		final String authorizationHeader = request.getHeader("Authorization"); // Paso 1 del login: se obtiene el encabezado desde Postman
 
 		String email = null;
 		String jwt = null;
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) { //no ingreso a aqui
-			jwt = authorizationHeader.substring(7); // extrae el token sin "Bearer "
-			email = jwtProvider.extractEmailFromToken(jwt);
+		// Verifica si el encabezado de autorización es válido
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			jwt = authorizationHeader.substring(7); // Extrae el token sin el prefijo "Bearer "
+			email = jwtProvider.extractEmailFromToken(jwt);  // Extrae el correo electrónico del token
 		}
 
-		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {//no ingreso a aqui
+		// Verifica si el email se extrajo correctamente y si no hay una autenticación actual
+		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			// Carga los detalles del usuario a partir del email
 			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
+			// Verifica si el token es válido
 			if (jwtProvider.validateToken(jwt)) {
+				// Crea una autenticación y la establece en el contexto de seguridad
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				usernamePasswordAuthenticationToken
@@ -48,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			}
 		}
 
-		filterChain.doFilter(request, response); //PASO 2 DEL LOGIN
+		// Continúa con el siguiente filtro en la cadena
+		filterChain.doFilter(request, response); // Paso 2 del login: se pasa al siguiente filtro
 	}
 }

@@ -14,50 +14,51 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
-@EnableWebSecurity
+@Configuration  // Esta clase es una clase de configuración de Spring
+@EnableWebSecurity  // Habilita la seguridad web en el proyecto
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private JwtEntryPoint jwtEntryPoint;
+	@Autowired
+	private JwtEntryPoint jwtEntryPoint;  // Componente para manejar puntos de acceso no autorizados
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;  // Servicio para obtener detalles de usuario
 
-    @Autowired
-    private JwtFilter jwtFilter;
+	@Autowired
+	private JwtFilter jwtFilter;  // Filtro para JWT
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // Configura AuthenticationManager para que use el servicio de detalles de usuario con BCryptPasswordEncoder
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder()); //PASO 1 la aplicacion la hecho a correr y aqui inicia
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		// Configura AuthenticationManager para que use el servicio de detalles de
+		// usuario con BCryptPasswordEncoder
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // PASO 2
-    }
+	@Bean  // Define un bean para la codificación de contraseñas
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean(); // PASO 3
-    }
+	@Bean  // Define un bean para el AuthenticationManager
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // Desactiva CSRF
-        httpSecurity.csrf().disable()//PASO 4
-                // No necesita autenticación para estas rutas
-                .authorizeRequests().antMatchers("/users/login","/users").permitAll()//PASO 5
-                // Todas las demás rutas deben ser autenticadas
-                .anyRequest().authenticated()//PASO 6
-                .and()
-                // Asegúrate de que usamos una sesión sin estado; no se creará una sesión
-                .exceptionHandling().authenticationEntryPoint(jwtEntryPoint).and().sessionManagement() //PASO 7
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	@Override
+	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		// Desactiva CSRF
+		httpSecurity.csrf().disable()
+				// No necesita autenticación para estas rutas
+				.authorizeRequests().antMatchers("/users/login", "/users", "/file/process").permitAll()
+				// Todas las demás rutas deben ser autenticadas
+				.anyRequest().authenticated()
+				.and()
+				// Asegúrate de que usamos una sesión sin estado; no se creará una sesión
+				.exceptionHandling().authenticationEntryPoint(jwtEntryPoint).and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        // Añade un filtro para validar el token con cada solicitud
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);//PASO 8
-    }
+		// Añade un filtro para validar el token con cada solicitud
+		httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	}
 }
