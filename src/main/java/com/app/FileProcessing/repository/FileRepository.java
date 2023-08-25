@@ -6,6 +6,6 @@ import com.app.FileProcessing.model.File;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
-	Object findByFileName(String fileName);
+	long countByFileName(String fileName);
 
 }
