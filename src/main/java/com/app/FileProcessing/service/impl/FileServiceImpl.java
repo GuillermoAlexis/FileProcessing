@@ -87,7 +87,65 @@ public class FileServiceImpl implements FileService {
 
 	@Async
 	private void asyncProcessFileContent(MultipartFile file, File fileEntity) {
-		
+		try {
+			String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+			String[] lines = content.split("\n");
+
+			List<ValidationDetail> validationDetails = new ArrayList<>();
+
+			// Validar el contenido de cada línea del archivo
+			for (int i = 0; i < lines.length; i++) {
+				String line = lines[i];
+				String[] fields = line.split(",");
+
+				if (fields.length != 2) {
+					ValidationDetail detail = new ValidationDetail();
+					detail.setErrorMessage("Error en la línea " + (i + 1) + ": formato incorrecto.");
+					validationDetails.add(detail);
+					continue;
+				}
+
+				String name = fields[0].trim();
+				String ageStr = fields[1].trim();
+
+				if (!name.matches("[a-zA-Z]+")) {
+					ValidationDetail detail = new ValidationDetail();
+					detail.setErrorMessage("Error en la línea " + (i + 1) + ": nombre inválido.");
+					validationDetails.add(detail);
+				}
+
+				try {
+					int age = Integer.parseInt(ageStr);
+					if (age <= 0) {
+						throw new NumberFormatException();
+					}
+				} catch (NumberFormatException e) {
+					ValidationDetail detail = new ValidationDetail();
+					detail.setErrorMessage("Error en la línea " + (i + 1) + ": edad inválida.");
+					validationDetails.add(detail);
+				}
+			}
+
+			// Guardar validationDetails en la tabla ValidationDetail
+			validationDetailRepository.saveAll(validationDetails);
+
+			if (validationDetails.isEmpty()) {
+				fileEntity.setStatus("validado");
+			} else {
+				fileEntity.setStatus("procesado con errores");
+			}
+			fileRepository.save(fileEntity);
+
+		} catch (IOException e) {
+			// Manejar la excepción adecuadamente
+			// Registrar el error (esto es solo un ejemplo, deberías usar un logger
+			// adecuado)
+			System.err.println("Error al procesar el archivo: " + e.getMessage());
+
+			// Actualizar el estado del archivo
+			fileEntity.setStatus("procesado con errores");
+			fileRepository.save(fileEntity);
+		}
 	}
 
 	@Override
