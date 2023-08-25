@@ -1,5 +1,7 @@
 package com.app.FileProcessing.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +41,10 @@ public class FileController {
 	}
 
 	@GetMapping("/validation-details/{fileId}")
-	public ResponseEntity<ValidationDetailDTO> getValidationDetails(@PathVariable Long fileId,
-			@RequestParam(required = false) String errorCode) {
-		ValidationDetailDTO details = validationService.getValidationDetail(fileId, errorCode);
-		return new ResponseEntity<>(details, HttpStatus.OK);
+	public ResponseEntity<List<ValidationDetailDTO>> getValidationDetails(@PathVariable Long fileId,
+	        @RequestParam(required = false) String errorCode) {
+	    List<ValidationDetailDTO> details = validationService.getValidationDetail(fileId, errorCode);
+	    return new ResponseEntity<>(details, HttpStatus.OK);
 	}
+
 }

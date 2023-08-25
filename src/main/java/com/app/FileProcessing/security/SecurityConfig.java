@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// Desactiva CSRF
 		httpSecurity.csrf().disable()
 				// No necesita autenticación para estas rutas
-				.authorizeRequests().antMatchers("/users/login", "/users", "/file/process").permitAll()
+				.authorizeRequests().antMatchers("/users/login", "/users", "/file/validation-details/{fileId}", "/file/process", "/file/status/{fileId}").permitAll()
 				// Todas las demás rutas deben ser autenticadas
 				.anyRequest().authenticated()
 				.and()
