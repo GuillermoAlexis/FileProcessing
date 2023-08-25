@@ -1,5 +1,7 @@
 package com.app.FileProcessing.service;
 
+import java.util.List;
+
 import com.app.FileProcessing.dto.ValidationDetailDTO;
 
 public interface ValidationService {
@@ -11,6 +13,6 @@ public interface ValidationService {
 	 * registros del archivo.
 	 */
 
-	ValidationDetailDTO getValidationDetail(Long fileId, String errorCode);
+	List<ValidationDetailDTO> getValidationDetail(Long fileId, String errorCode);
 
 }

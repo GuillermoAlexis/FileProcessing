@@ -13,8 +13,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.FileProcessing.dto.AppUserDTO;
 import com.app.FileProcessing.dto.FileDTO;
+import com.app.FileProcessing.mapper.AppUserMapper;
 import com.app.FileProcessing.mapper.FileMapper;
+import com.app.FileProcessing.model.AppUser;
 import com.app.FileProcessing.model.File;
 import com.app.FileProcessing.model.ValidationDetail;
 import com.app.FileProcessing.repository.FileRepository;
@@ -173,9 +176,12 @@ public class FileServiceImpl implements FileService {
 		return "";
 	}
 
-	@Override
-	public FileDTO getFileStatus(Long fileId) {
-		// TODO Auto-generated method stub
+
+	public FileDTO getFileStatus(Long id) {
+		File file = fileRepository.findById(id).orElse(null);
+		if (file != null) {
+			return FileMapper.INSTANCE.toDTO(file);
+		}
 		return null;
 	}
 }

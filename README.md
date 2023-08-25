@@ -147,6 +147,24 @@ Este proyecto implementa una aplicación Java que proporciona una API RESTful pa
 4. JwtFilter extrae y valida el JWT de la solicitud. Si el token es válido, se extraen los detalles del usuario y se establecen en el contexto de seguridad de Spring.
 5. Si el token no es válido o ha expirado, se lanza una excepción y el usuario recibe un mensaje de error.
 
+## Tests
+
+Si deseas probar los tests de este proyecto y obtener una visión completa de la cobertura de código, te recomendamos utilizar Eclemma (también conocido como EclEmma) para Eclipse. Eclemma es una excelente herramienta de análisis de cobertura que te permitirá verificar qué partes de tu código están siendo ejecutadas por las pruebas y cuáles no.
+
+    Para utilizar Eclemma, sigue estos sencillos pasos:
+
+1. Abre Eclipse y asegúrate de tener el complemento Eclemma instalado. Si aún no lo tienes, puedes instalarlo fácilmente desde el Mercado de Eclipse.
+
+2. Ejecuta las pruebas unitarias de tu proyecto haciendo clic derecho en el proyecto, luego selecciona "Coverage As" y "JUnit Test".
+
+3. Después de ejecutar las pruebas, Eclemma generará un informe de cobertura de código en el que podrás ver qué líneas de código han sido cubiertas por las pruebas y cuáles no.
+
+4. Para obtener una visión general de la cobertura de todo el proyecto, crea una nueva configuración de cobertura en Eclemma, selecciona todas las clases que deseas incluir y ejecuta la cobertura.
+
+5. Eclemma te proporcionará estadísticas detalladas sobre la cobertura de código, incluyendo la cantidad de líneas cubiertas y no cubiertas, así como el porcentaje de cobertura total.
+
+6. Utilizando Eclemma, podrás identificar rápidamente áreas de tu código que no están siendo probadas adecuadamente, lo que te ayudará a mejorar la calidad de tu proyecto y asegurar un funcionamiento más robusto.
+
 ## Notas Importantes
 
 - La autenticación se basa en JWT, lo que significa que el servidor no mantiene ningún estado sobre los usuarios que han iniciado sesión. Cada solicitud se valida independientemente.
